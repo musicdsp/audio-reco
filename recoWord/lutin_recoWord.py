@@ -29,6 +29,7 @@ def configure(target, my_module):
 		'appl/main.cpp',
 		'appl/Windows.cpp',
 		'appl/widget/DataViewer.cpp',
+		'appl/wordList_FR.cpp'
 		])
 	my_module.add_depend(['ewol', 'audio-river'])
 	my_module.add_path(".")

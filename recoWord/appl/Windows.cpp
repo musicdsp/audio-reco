@@ -11,10 +11,11 @@
 #include <ewol/widget/Button.hpp>
 #include <appl/widget/DataViewer.hpp>
 #include <etk/tool.hpp>
+#include <appl/wordList_FR.hpp>
 
 appl::Windows::Windows() :
   propertyCount(this, "count",
-                     5,
+                     1,
                      "Number of time we restart a record"),
   m_composer(null) {
 	addObjectType("appl::Windows");
@@ -96,7 +97,13 @@ void appl::Windows::next() {
 	m_listPos++;
 	if (m_listPos >= m_list.size()) {
 		m_listPos = 0;
-		return;
+		m_list.clear();
+		while (m_list.size() == 0) {
+			int32_t id = appl::wordList::getRandWord_FR();
+			if (appl::wordList::getWord_FR(id).size() > 5 ) {
+				m_list.pushBack(appl::wordList::getWord_FR(id));
+			}
+		}
 	}
 	configureNewText(m_list[m_listPos]);
 }

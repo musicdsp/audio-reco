@@ -47,26 +47,28 @@ void appl::widget::DataViewer::onDataReceived(const void* _data,
                                               uint32_t _frequency,
                                               const etk::Vector<audio::channel>& _map) {
 	ethread::RecursiveLock lock(m_mutex);
-	if (_format != audio::format_float) {
+	if (_format != audio::format_int16) {
 		APPL_ERROR("call wrong type ... (need int16_t)");
 	}
 	// get the curent power of the signal.
-	const float* data = static_cast<const float*>(_data);
+	const int16_t* data = static_cast<const int16_t*>(_data);
 	for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
-		m_data.pushBack(data[iii]);
+		float tmpData = double(data[iii])*0.00003051757;
+		m_data.pushBack(tmpData);
+		m_data16.pushBack(data[iii]);
 		if (m_startAnalyse == false) {
 			m_detectStartPosition = m_data.size();
 			m_detectStopPosition = m_data.size() + 1;
-			if (data[iii] > startThresholdLevel) {
+			if (tmpData > startThresholdLevel) {
 				m_startAnalyse = true;
 				m_time = echrono::Clock::now();
 				m_silenceCount = 0;
 			}
 		} else {
-			if (data[iii] > stopThresholdLevel) {
+			if (tmpData > stopThresholdLevel) {
 				m_silenceCount = 0;
 				m_detectStopPosition = m_data.size();
-				m_detectMax = etk::max(m_detectMax, etk::abs(data[iii]));
+				m_detectMax = etk::max(m_detectMax, etk::abs(tmpData));
 			} else {
 				m_silenceCount++;
 			}
@@ -83,8 +85,8 @@ void appl::widget::DataViewer::start() {
 		channel.pushBack(audio::channel_frontLeft);
 		m_interface = m_manager->createInput(m_sampleRate,
 		                                     channel,
-		                                     audio::format_float,
-		                                     "microphone");
+		                                     audio::format_int16,
+		                                     "microphone_USB");
 		if(m_interface == null) {
 			APPL_ERROR("null interface");
 			return;
@@ -256,6 +258,7 @@ void appl::widget::DataViewer::periodicCall(const ewol::event::Time& _event) {
 void appl::widget::DataViewer::reset() {
 	ethread::RecursiveLock lock(m_mutex);
 	m_data.clear();
+	m_data16.clear();
 	m_startDisplayOffset = 0;
 	m_startAnalyse = false;
 	m_silenceCount = 0;
@@ -263,6 +266,7 @@ void appl::widget::DataViewer::reset() {
 	m_detectStopPosition = 0;
 	m_detectMax = 0;
 	m_data.resize(m_sampleRate*nbSecondOffset, 0.0);
+	m_data16.resize(m_sampleRate*nbSecondOffset, 0.0);
 }
 
 
@@ -294,7 +298,7 @@ bool appl::widget::DataViewer::onEventInput(const ewol::event::Input& _event) {
 
 
 void appl::widget::DataViewer::store(const etk::String& _userName, const etk::String& _value, const etk::String& _language) {
-	if (m_data.size() == 0) {
+	if (m_data16.size() == 0) {
 		return;
 	}
 	etk::String baseName = _language + "_" + _userName + "_" + etk::toString(m_time.get());
@@ -304,7 +308,7 @@ void appl::widget::DataViewer::store(const etk::String& _userName, const etk::St
 	doc.add("value", ejson::String(_value));
 	doc.add("language", ejson::String(_language));
 	doc.add("time", ejson::Number(m_time.get()));
-	doc.add("audio_format", ejson::String("float"));
+	doc.add("audio_format", ejson::String("int16"));
 	doc.add("audio_channel", ejson::Number(1));
 	doc.add("audio_sample_rate", ejson::Number(48000));
 	doc.add("audio_filename", ejson::String(baseName + ".raw"));
@@ -325,7 +329,7 @@ void appl::widget::DataViewer::store(const etk::String& _userName, const etk::St
 		if (fileIO->open(etk::io::OpenMode::Write) == false) {
 			return;
 		}
-		fileIO->write(&m_data[posStart], 1*audio::getFormatBytes(audio::format_float), (posStop-posStart));
+		fileIO->write(&m_data16[posStart], 1*audio::getFormatBytes(audio::format_int16), (posStop-posStart));
 		fileIO->close();
 	}
 	APPL_WARNING("store: " << fileNameAudioFile);

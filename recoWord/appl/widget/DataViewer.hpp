@@ -36,6 +36,7 @@ namespace appl {
 				void reset();
 			private:
 				etk::Vector<float> m_data;
+				etk::Vector<int16_t> m_data16;
 				int32_t m_startDisplayOffset = 0;
 				bool m_startAnalyse = false;
 				int32_t m_silenceCount = 0;

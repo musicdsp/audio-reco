@@ -29,6 +29,17 @@ static const etk::String configurationRiver =
 	"		channel-map:['front-left', 'front-right'],\n"
 	"		type:'auto',\n"
 	"		nb-chunk:1024\n"
+	"	},\n"
+	"	microphone_USB:{\n"
+	"		io:'input',\n"
+	"		map-on:{\n"
+	"			interface:'alsa',\n"
+	"			name:'hw:1,0',\n"
+	"		},\n"
+	"		frequency:48000,\n"
+	"		channel-map:['front-center'],\n"
+	"		type:'int16',\n"
+	"		nb-chunk:1024\n"
 	"	}\n"
 	"}\n";
 
