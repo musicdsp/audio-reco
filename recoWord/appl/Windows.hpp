@@ -25,15 +25,16 @@ namespace appl {
 			void onCallbackFinished();
 			etk::String m_textToSay;
 			etk::Vector<etk::String> m_list = {
-				"",
-				"bonjour", /*"ordinateur", "démarre", "arrête", "joue",
+				"",/*
+				"bonjour", */"ordinateur", "oui", "non", /*"démarre", "arrête", "joue",
 				"suivant", "suivante", "précédent", "précédente", "heure", "jour", "moi", "année",
-				"oui", "non", "ne", "pas", "est",
-				"maître", "esclave",
+				"ne", "pas", "est",
+				"maître", "esclave",*/
 				"quelle", "quel", "comment", "pourquoi",
-				"zoo", "wagon", "téléphone", "télévision", "appel", "film", "musique", "vidéo", "annimation", "enfant", "adulte"*/};
+				"zoo", "wagon", "téléphone", "télévision", "appel", "film", "musique", "vidéo", "annimation", "enfant", "adulte"};
 			int32_t m_listPos = 0;
 			int32_t m_count = 0;
+			int32_t m_total = 0;
 			void configureNewText(const etk::String& _text);
 			void next();
 			void updateCurentLabel();

@@ -32,9 +32,11 @@ namespace appl {
 				bool onEventInput(const ewol::event::Input& _event) override;
 				void start();
 				void stop();
+				void ioStop();
 				void recordToggle();
 				void reset();
 			private:
+				bool m_start = false;
 				etk::Vector<float> m_data;
 				etk::Vector<int16_t> m_data16;
 				int32_t m_startDisplayOffset = 0;

@@ -35,7 +35,7 @@ void appl::widget::DataViewer::init() {
 
 
 appl::widget::DataViewer::~DataViewer() {
-	
+	ioStop();
 }
 
 
@@ -49,6 +49,9 @@ void appl::widget::DataViewer::onDataReceived(const void* _data,
 	ethread::RecursiveLock lock(m_mutex);
 	if (_format != audio::format_int16) {
 		APPL_ERROR("call wrong type ... (need int16_t)");
+	}
+	if (m_start == false) {
+		return;
 	}
 	// get the curent power of the signal.
 	const int16_t* data = static_cast<const int16_t*>(_data);
@@ -78,6 +81,7 @@ void appl::widget::DataViewer::onDataReceived(const void* _data,
 
 void appl::widget::DataViewer::start() {
 	ethread::RecursiveLock lock(m_mutex);
+	m_start = true;
 	if (m_interface == null) {
 		reset();
 		//Get the generic input:
@@ -108,6 +112,12 @@ void appl::widget::DataViewer::start() {
 
 void appl::widget::DataViewer::stop() {
 	ethread::RecursiveLock lock(m_mutex);
+	m_start = false;
+}
+
+void appl::widget::DataViewer::ioStop() {
+	ethread::RecursiveLock lock(m_mutex);
+	stop();
 	if (m_interface != null) {
 		m_interface->stop();
 		m_interface.reset();
@@ -118,7 +128,7 @@ void appl::widget::DataViewer::stop() {
 
 void appl::widget::DataViewer::recordToggle() {
 	ethread::RecursiveLock lock(m_mutex);
-	if (m_interface == null) {
+	if (m_start == false) {
 		start();
 	} else {
 		stop();
@@ -333,4 +343,6 @@ void appl::widget::DataViewer::store(const etk::String& _userName, const etk::St
 		fileIO->close();
 	}
 	APPL_WARNING("store: " << fileNameAudioFile);
+	reset();
 }
+

@@ -12,11 +12,12 @@
 #include <appl/widget/DataViewer.hpp>
 #include <etk/tool.hpp>
 #include <appl/wordList_FR.hpp>
+#include <appl/wordList_FR_ordered.hpp>
 
 appl::Windows::Windows() :
   propertyCount(this, "count",
-                     1,
-                     "Number of time we restart a record"),
+                      5,
+                      "Number of time we restart a record"),
   m_composer(null) {
 	addObjectType("appl::Windows");
 	propertyTitle.setDirectCheck("River IO viewer");
@@ -38,11 +39,11 @@ void appl::Windows::init() {
 	composition += "				Reset Currrent Record\n";
 	composition += "			</label>\n";
 	composition += "		</button>\n";
-	composition += "		<label name='text-to-say' expand='true' fill='true'>\n";
-	composition += "			Text to say ...\n";
-	composition += "		</label>\n";
 	composition += "	</sizer>\n";
-	composition += "	<DataViewer name='displayer' expand='true' fill='true'/>\n";
+	composition += "	<label name='text-to-say' expand='true' fill='true' font-size='75'>\n";
+	composition += "		Text to say ...\n";
+	composition += "	</label>\n";
+	composition += "	<DataViewer name='displayer' expand='true' fill='true' min-size='100,60%'/>\n";
 	composition += "</sizer>\n";
 	
 	m_composer = ewol::widget::Composer::create();
@@ -94,18 +95,23 @@ void appl::Windows::onCallbackGenerate() {
 }
 
 void appl::Windows::next() {
+	m_total++;
 	m_listPos++;
-	if (m_listPos >= m_list.size()) {
-		m_listPos = 0;
-		m_list.clear();
-		while (m_list.size() == 0) {
-			int32_t id = appl::wordList::getRandWord_FR();
-			if (appl::wordList::getWord_FR(id).size() > 5 ) {
-				m_list.pushBack(appl::wordList::getWord_FR(id));
+	#if 0
+		if (m_listPos >= m_list.size()) {
+			m_listPos = 0;
+			m_list.clear();
+			while (m_list.size() == 0) {
+				int32_t id = appl::wordList::getRandWord_FR();
+				if (appl::wordList::getWord_FR(id).size() > 5 ) {
+					m_list.pushBack(appl::wordList::getWord_FR(id));
+				}
 			}
 		}
-	}
-	configureNewText(m_list[m_listPos]);
+		configureNewText(m_list[m_listPos]);
+	#else
+		configureNewText(appl::wordList::getWord_FR_ordered(m_listPos-1));
+	#endif
 }
 
 void appl::Windows::updateCurentLabel() {
@@ -113,7 +119,7 @@ void appl::Windows::updateCurentLabel() {
 	if (elem == null) {
 		return;
 	}
-	elem->propertyValue.set("[" + etk::toString(m_count+1) + "/" + etk::toString(propertyCount.get()) + "] "+ m_textToSay);
+	elem->propertyValue.set("[" + etk::toString(m_count+1) + "/" + etk::toString(propertyCount.get()) + "] "+ m_textToSay + "<br/> " + etk::toString(m_listPos) + "  total="+ etk::toString(m_total));
 }
 
 void appl::Windows::configureNewText(const etk::String& _text) {
