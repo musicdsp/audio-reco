@@ -15,7 +15,7 @@ Natural Language Processing (NLP): https://github.com/zalandoresearch/flair
 ideas of architeture:
 =====================
 
-![objectuve work](work.svg)
+![objectuve work](work.jpg)
 
 
 
