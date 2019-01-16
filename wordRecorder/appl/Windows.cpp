@@ -81,6 +81,11 @@ void appl::Windows::init() {
 	composition += "				Next\n";
 	composition += "			</label>\n";
 	composition += "		</button>\n";
+	composition += "		<button name='bt-remove' expand='false,true' fill='true'>\n";
+	composition += "			<label>\n";
+	composition += "				Remove previous\n";
+	composition += "			</label>\n";
+	composition += "		</button>\n";
 	composition += "	</sizer>\n";
 	composition += "	<label name='text-to-say' expand='true' fill='true' font-size='75'>\n";
 	composition += "		Text to say ...\n";
@@ -101,6 +106,7 @@ void appl::Windows::init() {
 	subBind(ewol::widget::Button, "bt-reset", signalPressed, sharedFromThis(), &appl::Windows::onCallbackGenerate);
 	subBind(ewol::widget::Button, "bt-next", signalPressed, sharedFromThis(), &appl::Windows::resetCount);
 	subBind(ewol::widget::Button, "bt-next", signalPressed, sharedFromThis(), &appl::Windows::next);
+	subBind(ewol::widget::Button, "bt-remove", signalPressed, sharedFromThis(), &appl::Windows::remove);
 	subBind(appl::widget::DataViewer, "displayer", signalFinished, sharedFromThis(), &appl::Windows::onCallbackFinished);
 
 }
@@ -109,7 +115,7 @@ void appl::Windows::onCallbackFinished() {
 	APPL_INFO("Recording is finished");
 	ememory::SharedPtr<appl::widget::DataViewer> tmpDisp = ememory::dynamicPointerCast<appl::widget::DataViewer>(getSubObjectNamed("displayer"));
 	if (tmpDisp != null) {
-		tmpDisp->store(propertyCorpusPath.get(), propertyUserName.get(), propertyUserBirthYear.get(), m_textToSay, "FR_fr");
+		m_previousFiles = tmpDisp->store(propertyCorpusPath.get(), propertyUserName.get(), propertyUserBirthYear.get(), m_textToSay, "FR_fr");
 		m_count++;
 		if (m_count >= propertyCount.get()) {
 			m_count = 0;
@@ -148,6 +154,14 @@ void appl::Windows::onCallbackGenerate() {
 		tmpDisp->reset();
 		tmpDisp->start();
 	}
+}
+
+void appl::Windows::remove() {
+	for (auto& elem: m_previousFiles) {
+		APPL_INFO("Remove file " << elem);
+		etk::uri::remove(elem);
+	}
+	m_previousFiles.clear();
 }
 
 void appl::Windows::next() {

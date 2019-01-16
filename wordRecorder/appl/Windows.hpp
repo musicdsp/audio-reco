@@ -37,6 +37,7 @@ namespace appl {
 			void onCallbackFinished();
 			void resetCount();
 			void stop();
+			void remove();
 			etk::String m_textToSay;
 			int32_t m_listPos = 0;
 			int32_t m_count = 0;
@@ -45,6 +46,7 @@ namespace appl {
 			void next();
 			void updateCurentLabel();
 			void inputChangeValue();
+			etk::Vector<etk::Uri> m_previousFiles;
 	};
 }
 

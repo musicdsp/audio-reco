@@ -53,7 +53,7 @@ namespace appl {
 			public:
 				void onDraw() override;
 				void onRegenerateDisplay() override;
-				void store(const etk::Uri& _baseUri, const etk::String& _userName, int32_t _userYearBirth, const etk::String& _value, const etk::String& _language);
+				etk::Vector<etk::Uri> store(const etk::Uri& _baseUri, const etk::String& _userName, int32_t _userYearBirth, const etk::String& _value, const etk::String& _language);
 			protected:
 				esignal::Connection m_PCH; //!< Periodic Call Handle to remove it when needed
 				/**

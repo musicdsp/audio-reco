@@ -313,9 +313,10 @@ bool appl::widget::DataViewer::onEventInput(const ewol::event::Input& _event) {
 }
 
 
-void appl::widget::DataViewer::store(const etk::Uri& _baseUri, const etk::String& _userName, int32_t _userYearBirth, const etk::String& _value, const etk::String& _language) {
+etk::Vector<etk::Uri> appl::widget::DataViewer::store(const etk::Uri& _baseUri, const etk::String& _userName, int32_t _userYearBirth, const etk::String& _value, const etk::String& _language) {
+	etk::Vector<etk::Uri> out;
 	if (m_data16.size() == 0) {
-		return;
+		return out;
 	}
 	etk::String baseName = _language + "_" + _userName + "_" + etk::toString(m_time.get());
 	// create the buffer
@@ -338,9 +339,11 @@ void appl::widget::DataViewer::store(const etk::Uri& _baseUri, const etk::String
 	uriMetaData.setPath(_baseUri.getPath() / (baseName + ".json"));
 	doc.storeSafe(uriMetaData);
 	APPL_WARNING("store: " << uriMetaData);
+	out.pushBack(uriMetaData);
 	
 	etk::Uri uriAudioFile = _baseUri;
 	uriAudioFile.setPath(_baseUri.getPath() / (baseName + ".raw"));
+	out.pushBack(uriAudioFile);
 	
 	int64_t posStart = int64_t(m_detectStartPosition)-nbSecondPreviousPost*m_sampleRate;
 	posStart = etk::avg(int64_t(0), posStart, int64_t(m_data.size()));
@@ -349,12 +352,13 @@ void appl::widget::DataViewer::store(const etk::Uri& _baseUri, const etk::String
 	{
 		ememory::SharedPtr<etk::io::Interface> fileIO = etk::uri::get(uriAudioFile);
 		if (fileIO->open(etk::io::OpenMode::Write) == false) {
-			return;
+			return out;
 		}
 		fileIO->write(&m_data16[posStart], 1*audio::getFormatBytes(audio::format_int16), (posStop-posStart));
 		fileIO->close();
 	}
 	APPL_WARNING("store: " << uriAudioFile);
 	reset();
+	return out;
 }
 
