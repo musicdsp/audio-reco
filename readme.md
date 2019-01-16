@@ -19,7 +19,6 @@ Analyse the corpus and create the "model":
 	lutin.py audio-reco-analyser?build?run:--corpus=~/.local/shared/audio-reco-wordRecorder/corpus
 	lutin.py audio-reco-analyser?build?run:--corpus=~/.local/shared/audio-reco-wordRecorder/corpus:--help
 	lutin -cclang -mrelease audio-reco-wordRecorder?build?run:--elog-level=3:--user_name=Edouard_DUPIN:--user_birth_year=1983:--source_type=ORDERED_WORD
-	
 
 License (MPL v2.0)
 =====================
